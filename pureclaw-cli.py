@@ -106,12 +106,12 @@ def _model_label(backend: str, model: str) -> str:
 # ---------------------------------------------------------------------------
 
 LOGO_LINES = [
-    r"    /\___/\ ",
-    f"   ( {RED}o{RESET}{MAGENTA}   {RED}o{RESET}{MAGENTA} )",
-    r"   (  =^=  )",
-    r"    )     ( ",
-    r"   (  |||  )",
-    r"  ( ||| ||| )",
+    f"    /\\___/\\ ",
+    f"   ( {RED}o{RESET}{WHITE}   {RED}o{RESET}{WHITE} )",
+    f"   (  =^=  )",
+    f"    )     ( ",
+    f"   (  |||  )",
+    f"  ( ||| ||| )",
 ]
 
 def print_banner(backend: str = "vllm", model: str = "sonnet", server_version: str = ""):
@@ -137,9 +137,9 @@ def print_banner(backend: str = "vllm", model: str = "sonnet", server_version: s
         visible_len = len(_ansi_re.sub('', logo_line))
         pad = ' ' * (max_logo_w - visible_len)
         if i < len(title_lines):
-            print(f"  {MAGENTA}{logo_line}{pad}{RESET}  {title_lines[i]}")
+            print(f"  {WHITE}{logo_line}{pad}{RESET}  {title_lines[i]}")
         else:
-            print(f"  {MAGENTA}{logo_line}{pad}{RESET}")
+            print(f"  {WHITE}{logo_line}{pad}{RESET}")
 
     # Print any remaining title lines
     for i in range(len(logo_lines), len(title_lines)):

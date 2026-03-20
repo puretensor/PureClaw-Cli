@@ -43,7 +43,7 @@ except ImportError:
 # Configuration
 # ---------------------------------------------------------------------------
 
-VERSION = "1.2.1"
+VERSION = "1.2.5"
 CONFIG_PATH = Path.home() / ".config" / "pureclaw" / "cli.conf"
 DEFAULT_HOST = "localhost"
 DEFAULT_PORT = 9877
@@ -245,22 +245,17 @@ class NexusTerminal:
                 etype = event.get("type", "")
 
                 if etype == "text_delta":
-                    if self._last_tool_status:
-                        sys.stdout.write(CLEAR_LINE)
-                        self._last_tool_status = ""
+                    self._last_tool_status = ""
                     sys.stdout.write(event.get("text", ""))
                     sys.stdout.flush()
 
                 elif etype == "tool_status":
                     status = event.get("status", "")
                     self._last_tool_status = status
-                    sys.stdout.write(f"{CLEAR_LINE}{DIM}{ITALIC}{status}{RESET}")
-                    sys.stdout.flush()
+                    print(f"  {DIM}{ITALIC}{status}{RESET}")
 
                 elif etype == "stream_end":
-                    if self._last_tool_status:
-                        sys.stdout.write(CLEAR_LINE)
-                        self._last_tool_status = ""
+                    self._last_tool_status = ""
                     self._streaming = False
                     self._print_separator()
 

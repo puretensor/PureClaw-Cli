@@ -1,4 +1,4 @@
-# PureClaw CLI
+# PureClaw Cli
 
 Terminal interface to [PureClaw](https://github.com/puretensor/PureClaw) -- the agentic platform from [PureTensor](https://puretensor.ai).
 
@@ -11,14 +11,14 @@ Terminal interface to [PureClaw](https://github.com/puretensor/PureClaw) -- the 
   ( ||| ||| )
 ```
 
-PureClaw CLI connects to a running Nexus server over WebSocket and gives you a streaming terminal interface with slash command autocomplete, model switching, session management, and live UK rail departures.
+PureClaw Cli connects to a running Nexus server over WebSocket and gives you a streaming terminal interface with slash command autocomplete, model switching, session management, and live UK rail departures.
 
 ## Part of the PureClaw Family
 
 | Repository | Description |
 |---|---|
 | [PureClaw](https://github.com/puretensor/PureClaw) | Nexus -- the core agent platform (Telegram, Discord, WhatsApp, Email, Terminal channels) |
-| **PureClaw-Cli** | This repo -- standalone terminal client |
+| **PureClaw Cli** | This repo -- standalone terminal client |
 
 PureClaw is the agentic identity for PureTensor infrastructure. It runs on Nexus, a multi-channel agent platform that provides tool access, memory, session management, and streaming responses across Telegram, Discord, WhatsApp, email, and terminal. This CLI is the terminal channel's client side -- a single-file Python script that talks to Nexus over WebSocket.
 
@@ -121,7 +121,7 @@ Your machine                         Nexus server (K3s)
                                    +----------------------+
 ```
 
-The CLI is intentionally minimal -- a single file, two pip dependencies, no framework. All intelligence lives server-side in Nexus.
+The client is intentionally minimal -- a single file, two pip dependencies, no framework. All intelligence lives server-side in Nexus.
 
 ## License
 

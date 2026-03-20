@@ -34,6 +34,7 @@ try:
     from prompt_toolkit import PromptSession
     from prompt_toolkit.completion import Completer, Completion
     from prompt_toolkit.formatted_text import ANSI as PTK_ANSI
+    from prompt_toolkit.patch_stdout import patch_stdout as ptk_patch_stdout
     HAS_PROMPT_TOOLKIT = True
 except ImportError:
     HAS_PROMPT_TOOLKIT = False
@@ -301,6 +302,39 @@ class NexusTerminal:
                 print(f"{RED}\nConnection lost during streaming{RESET}")
             raise
 
+    async def _prompt_loop(self, pt_session, prompt_str):
+        """Inner prompt loop — runs inside patch_stdout context."""
+        while True:
+            try:
+                line = await pt_session.prompt_async(PTK_ANSI(prompt_str))
+            except EOFError:
+                return
+            except KeyboardInterrupt:
+                if self._streaming:
+                    print(f"\n{DIM}(interrupt){RESET}")
+                    continue
+                return
+
+            line = line.strip()
+            if not line:
+                continue
+
+            if line.startswith("/"):
+                parts = line[1:].split(None, 1)
+                cmd = parts[0].lower() if parts else ""
+                args = parts[1] if len(parts) > 1 else ""
+
+                if cmd in ("quit", "exit"):
+                    return
+
+                await self.send_command(cmd, args)
+                while self._command_pending:
+                    await asyncio.sleep(0.05)
+            else:
+                await self.send_message(line)
+                while self._streaming:
+                    await asyncio.sleep(0.05)
+
     async def input_loop(self):
         """Read user input and send to server."""
         prompt_str = f"{BOLD}{GREEN}\u276f{RESET} "
@@ -310,42 +344,42 @@ class NexusTerminal:
                 completer=SlashCompleter(),
                 complete_while_typing=True,
             )
-
-        while True:
-            try:
-                if HAS_PROMPT_TOOLKIT:
-                    line = await pt_session.prompt_async(PTK_ANSI(prompt_str))
-                else:
+            # patch_stdout keeps the prompt fixed at the bottom —
+            # all stdout writes from the receive_loop scroll above it
+            with ptk_patch_stdout(raw=True):
+                await self._prompt_loop(pt_session, prompt_str)
+        else:
+            while True:
+                try:
                     loop = asyncio.get_event_loop()
                     line = await loop.run_in_executor(None, lambda: input(prompt_str))
-            except EOFError:
-                break
-            except KeyboardInterrupt:
-                if self._streaming:
-                    print(f"\n{DIM}(interrupt){RESET}")
-                    continue
-                break
-
-            line = line.strip()
-            if not line:
-                continue
-
-            # Parse commands
-            if line.startswith("/"):
-                parts = line[1:].split(None, 1)
-                cmd = parts[0].lower() if parts else ""
-                args = parts[1] if len(parts) > 1 else ""
-
-                if cmd in ("quit", "exit"):
+                except EOFError:
+                    break
+                except KeyboardInterrupt:
+                    if self._streaming:
+                        print(f"\n{DIM}(interrupt){RESET}")
+                        continue
                     break
 
-                await self.send_command(cmd, args)
-                while self._command_pending:
-                    await asyncio.sleep(0.05)
-            else:
-                await self.send_message(line)
-                while self._streaming:
-                    await asyncio.sleep(0.05)
+                line = line.strip()
+                if not line:
+                    continue
+
+                if line.startswith("/"):
+                    parts = line[1:].split(None, 1)
+                    cmd = parts[0].lower() if parts else ""
+                    args = parts[1] if len(parts) > 1 else ""
+
+                    if cmd in ("quit", "exit"):
+                        break
+
+                    await self.send_command(cmd, args)
+                    while self._command_pending:
+                        await asyncio.sleep(0.05)
+                else:
+                    await self.send_message(line)
+                    while self._streaming:
+                        await asyncio.sleep(0.05)
 
     async def run(self):
         """Main loop with auto-reconnect."""

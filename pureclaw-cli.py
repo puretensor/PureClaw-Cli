@@ -105,14 +105,14 @@ def _model_label(backend: str, model: str) -> str:
 # Startup banner
 # ---------------------------------------------------------------------------
 
-LOGO = r"""
-    /\___/\
-   ( o   o )
-   (  =^=  )
-    )     (
-   (  |||  )
-  ( ||| ||| )
-"""
+LOGO_LINES = [
+    r"    /\___/\ ",
+    f"   ( {RED}o{RESET}{MAGENTA}   {RED}o{RESET}{MAGENTA} )",
+    r"   (  =^=  )",
+    r"    )     ( ",
+    r"   (  |||  )",
+    r"  ( ||| ||| )",
+]
 
 def print_banner(backend: str = "vllm", model: str = "sonnet", server_version: str = ""):
     """Print branded startup banner like Claude Code."""
@@ -121,7 +121,7 @@ def print_banner(backend: str = "vllm", model: str = "sonnet", server_version: s
     w = _term_width()
 
     # Logo + title side by side
-    logo_lines = [l for l in LOGO.split("\n") if l.strip()]
+    logo_lines = LOGO_LINES
     title_lines = [
         f"{BOLD}{CYAN}PureClaw Cli{RESET} {DIM}v{ver}{RESET}",
         f"{model_text}",
@@ -129,13 +129,17 @@ def print_banner(backend: str = "vllm", model: str = "sonnet", server_version: s
     ]
 
     # Print logo lines with title alongside
-    max_logo_w = max(len(l) for l in logo_lines) if logo_lines else 0
+    # Strip ANSI for width calculation
+    import re
+    _ansi_re = re.compile(r'\033\[[0-9;]*m')
+    max_logo_w = max(len(_ansi_re.sub('', l)) for l in logo_lines) if logo_lines else 0
     for i, logo_line in enumerate(logo_lines):
-        padded = logo_line.ljust(max_logo_w)
+        visible_len = len(_ansi_re.sub('', logo_line))
+        pad = ' ' * (max_logo_w - visible_len)
         if i < len(title_lines):
-            print(f"  {MAGENTA}{padded}{RESET}  {title_lines[i]}")
+            print(f"  {MAGENTA}{logo_line}{pad}{RESET}  {title_lines[i]}")
         else:
-            print(f"  {MAGENTA}{padded}{RESET}")
+            print(f"  {MAGENTA}{logo_line}{pad}{RESET}")
 
     # Print any remaining title lines
     for i in range(len(logo_lines), len(title_lines)):

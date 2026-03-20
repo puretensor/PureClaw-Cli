@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""PureClaw CLI — terminal interface to PureClaw over WebSocket.
+"""PureClaw Cli — terminal interface to PureClaw over WebSocket.
 
 Lightweight single-file client for the PureClaw agent platform. Connects to a
 Nexus server over WebSocket and provides a streaming terminal interface with
@@ -123,7 +123,7 @@ def print_banner(backend: str = "vllm", model: str = "sonnet", server_version: s
     # Logo + title side by side
     logo_lines = [l for l in LOGO.split("\n") if l.strip()]
     title_lines = [
-        f"{BOLD}{CYAN}PureClaw Code{RESET} {DIM}v{ver}{RESET}",
+        f"{BOLD}{CYAN}PureClaw Cli{RESET} {DIM}v{ver}{RESET}",
         f"{model_text}",
         f"{DIM}{Path.home()}{RESET}",
     ]

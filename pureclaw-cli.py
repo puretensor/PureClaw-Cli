@@ -42,7 +42,7 @@ except ImportError:
 # Configuration
 # ---------------------------------------------------------------------------
 
-VERSION = "1.0.0"
+VERSION = "1.2.1"
 CONFIG_PATH = Path.home() / ".config" / "pureclaw" / "cli.conf"
 DEFAULT_HOST = "localhost"
 DEFAULT_PORT = 9877

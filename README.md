@@ -4,7 +4,7 @@ Terminal interface to [PureClaw](https://github.com/puretensor/PureClaw) -- the 
 
 ```
     /\___/\
-   ( o   o )       PureClaw Cli v1.0.0
+   ( o   o )       PureClaw Cli v1.2.1
    (  =^=  )       Claude Opus 4.6 (Bedrock)
     )     (         ~
    (  |||  )
